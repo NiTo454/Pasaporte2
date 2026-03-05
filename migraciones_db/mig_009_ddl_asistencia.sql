@@ -27,4 +27,8 @@ VALUES ('DDL', 'Create asistencia tbl', 'Tabla para registrar quien asistio y qu
 
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
+<<<<<<< HEAD
 SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
+=======
+SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
+>>>>>>> e0bce26f4626e0c63ec47d1153869e1b2ade60de

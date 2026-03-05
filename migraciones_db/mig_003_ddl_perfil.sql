@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS `perfil_tiene_permiso` (
     `perfil_id` BIGINT NOT NULL,
     `permiso_id` BIGINT NOT NULL,
     PRIMARY KEY (`perfil_id`, `permiso_id`),
-    INDEX `fk_perfil_tiene_permiso_permiso1_idx` (`permiso_id` ASC) VISIBLE,
-    INDEX `fk_perfil_tiene_permiso_perfil_idx` (`perfil_id` ASC) VISIBLE,
+    INDEX `fk_perfil_tiene_permiso_permiso1_idx` (`permiso_id` ASC)  ,
+    INDEX `fk_perfil_tiene_permiso_perfil_idx` (`perfil_id` ASC)  ,
     CONSTRAINT `fk_perfil_tiene_permiso_perfil` FOREIGN KEY (`perfil_id`) REFERENCES `perfil` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_perfil_tiene_permiso_permiso1` FOREIGN KEY (`permiso_id`) REFERENCES `permiso` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;

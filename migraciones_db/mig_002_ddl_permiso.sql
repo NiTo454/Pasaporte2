@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `permiso` (
     `codename` VARCHAR(100) NOT NULL,
     `nombre` VARCHAR(100) NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `codename_UNIQUE` (`codename` ASC) VISIBLE
+    UNIQUE INDEX `codename_UNIQUE` (`codename` ASC) 
 ) ENGINE = InnoDB;
 
 INSERT INTO

@@ -1,0 +1,149 @@
+/* =========================================================
+   VARIABLES Y BASE
+========================================================= */
+:root {
+  --primary: #6C132B; /* Guinda UTVAM */
+  --primary-dark: #560f22;
+  --bg-light: #f8f6f6;
+  --bg-dark: #221010;
+  --card-dark: #1a1a1a;
+  --card-lighter: #2a2a2a;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Lexend", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-light);
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   PASSPORT CARD (DISEÑO QR)
+========================================================= */
+.card {
+  max-width: 420px;
+  margin: 2rem auto;
+  background: var(--card-dark);
+  color: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0,0,0,.4);
+  border: 1px solid #1f2937;
+}
+
+.card-accent {
+  height: 8px;
+  background: linear-gradient(to right, var(--primary), #ef4444, var(--primary));
+}
+
+.card-header {
+  padding: 2rem 2rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.code {
+  font-family: monospace;
+  background: #1f2937;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #374151;
+  font-size: 0.8rem;
+}
+
+.profile-pic {
+  width: 55px;
+  height: 55px;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(108,19,43,0.3);
+  background: #1f2937;
+}
+
+/* =========================================================
+   QR SECTION
+========================================================= */
+.qr-section {
+  padding: 2rem;
+  text-align: center;
+}
+
+.qr-box {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.qr-box img {
+  width: 200px;
+  height: 200px;
+  display: block;
+}
+
+.qr-label {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+/* =========================================================
+   DIVIDER & BUTTONS
+========================================================= */
+.divider-line {
+  margin: 0 2rem;
+  border-bottom: 2px dashed #374151;
+}
+
+.actions button.primary {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--primary);
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(108,19,43,0.3);
+  transition: transform 0.2s;
+}
+
+.actions button.primary:hover {
+  transform: translateY(-2px);
+  background: var(--primary-dark);
+}
+
+.card-footer {
+  background: rgba(0,0,0,.3);
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.6rem;
+  color: #9ca3af;
+  letter-spacing: 0.1rem;
+}
