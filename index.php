@@ -10,7 +10,7 @@
         <h1>Bienvenido al sitio de TICs 2026</h1>
         Sitio
     </main>
-
+    <img src="generador_qr.php?m=<?php echo $estudiante['matricula']; ?>" alt="QR">
     <?php include 'templates/footer.php'; ?>
 </body>
 </html>
