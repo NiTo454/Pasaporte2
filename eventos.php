@@ -2,6 +2,7 @@
 include_once "app/usuario/model.php";
 session_start();
 
+include_once 'helpers/db.php';
 include_once 'helpers/vars.php';
 include_once 'app/evento/model.php';
 
@@ -35,10 +36,39 @@ if ($accion === 'create') {
     try {
         $object->delete();
         header('Location: eventos.php?accion=listar');
+        exit;
     } catch (Exception $e) {
         error_log("Error deleting event: " . $e->getMessage());
         $errors[] = "Error al eliminar el evento: " . $e->getMessage();
         $accion = 'mostrar';
+    }
+} elseif ($accion === 'autoregistrar') {
+    if (!isset($_SESSION['current_user']) || !$_SESSION['current_user']) {
+        $errors[] = "Debe iniciar sesión para registrarse a un evento.";
+        $accion = 'listar';
+    } else {
+        $userId = $_SESSION['current_user']->id;
+        $eventoId = getvar('evento_id');
+        if ($eventoId !== null) {
+            $tblRegistro = new Table('registro');
+            try {
+                $yaRegistrado = $tblRegistro->select('usuario_id = ? AND evento_id = ?', [$userId, $eventoId]);
+                if ($yaRegistrado !== null) {
+                    $errors[] = 'Ya estás registrado en este evento.';
+                } else {
+                    $res = $tblRegistro->insert(['usuario_id' => $userId, 'evento_id' => $eventoId]);
+                    if ($res !== false) {
+                        header('Location: eventos.php?accion=listar&mensaje=' . urlencode('Tu registro se guardó correctamente.'));
+                        exit;
+                    } else {
+                        $errors[] = 'No se pudo completar el registro.';
+                    }
+                }
+            } catch (Exception $e) {
+                $errors[] = 'Error al registrar: ' . $e->getMessage();
+            }
+        }
+        $accion = 'listar';
     }
 }
 ?><!DOCTYPE html>
@@ -62,6 +92,12 @@ if ($accion === 'create') {
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endforeach; ?>
+
+        <?php $mensaje = getvar('mensaje'); if ($mensaje): ?>
+            <div class="alert alert-success" role="alert">
+                <?php echo htmlspecialchars($mensaje); ?>
+            </div>
+        <?php endif; ?>
 
         <?php
         if($accion === 'listar' || $accion === null) {

@@ -37,6 +37,15 @@ $data = $object->getAll();
                 <td><?= htmlspecialchars($eventos['costo_externo']) ?></td>
                 <td><?= htmlspecialchars($eventos['requiere_registro']) ?></td>
                 <td class="text-center">
+                    <?php
+                    $now = new DateTime();
+                    $fecha = new DateTime($eventos['fecha_hora']);
+                    if ($fecha >= $now): ?>
+                        <a class="btn btn-sm btn-primary" href="eventos.php?accion=autoregistrar&evento_id=<?= urlencode($eventos['id']) ?>">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            Registrar
+                        </a>
+                    <?php endif; ?>
                     <a class="btn btn-outline-secondary" href="eventos.php?accion=mostrar&pk=<?= urlencode($eventos['id']) ?>">
                         <i class="fa-regular fa-eye"></i>
                         Mostrar
