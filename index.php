@@ -14,6 +14,28 @@ if(getvar("accion") === "login") {
         }
     }
 }
+
+$err_pwd = "";
+if(getvar("accion") === "actualizar_pwd" && isset($_SESSION["current_user"])) {
+    $pwd_actual = getvar("pwd_actual");
+    $pwd_nuevo = getvar("pwd_nuevo");
+    $pwd_confirmacion = getvar("pwd_confirmacion");
+
+    $usuario = $_SESSION["current_user"];
+    $resultado = $usuario->procesarCambioPassword($pwd_actual, $pwd_nuevo, $pwd_confirmacion);
+
+    if ($resultado["success"]) {
+        header("Location: index.php?msg=pwd_updated");
+        exit;
+    } else {
+        $err_pwd = $resultado["err"];
+    }
+}
+
+$success_msg = "";
+if(getvar("msg") === "pwd_updated") {
+    $success_msg = "Contraseña actualizada exitosamente. Por favor, ingresa de nuevo con tu nueva contraseña.";
+}
 ?><!DOCTYPE html>
 <html lang="es-MX">
 <head>
@@ -33,6 +55,12 @@ if(getvar("accion") === "login") {
                     <h2 class="text-center mb-4">Acceso</h2>
                     <?php if(isset($err) && $err):?>
                         <div class="alert alert-danger" role="alert"><?php echo $err; ?></div>
+                    <?php endif; ?>
+                    <?php if($success_msg):?>
+                        <div class="alert alert-success alert-dismissible fade show" style="font-size: 0.95rem;" role="alert">
+                            <i class="fa-solid fa-circle-check me-1"></i> <?php echo $success_msg; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     <?php endif; ?>
                     <?php include "app/usuario/form_login.php"; ?>
                     <button type="submit" class="btn btn-primary w-100">Entrar</button>
@@ -55,9 +83,15 @@ if(getvar("accion") === "login") {
                         ?>
                         <div id="qrcode" class="d-flex justify-content-center mb-3" data-matricula="<?php echo $mat; ?>" data-id="<?php echo $uid; ?>" data-fallback="<?php echo $fallback; ?>"></div>
                         <p id="qr-label" class="text-muted font-monospace mb-0"></p>
+
+                        <hr class="mt-4">
+                        <button type="button" class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#modalActualizarPwd">
+                            Actualizar Contraseña
+                        </button>
                     </div>
                 </div>
             </div>
+            <?php include 'app/usuario/form_actualizar_password.php'; ?>
 
             <script src="assets/js/qr_generator.js"></script>
         <?php endif; ?>

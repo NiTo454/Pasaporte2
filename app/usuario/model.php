@@ -205,4 +205,33 @@ class Usuario extends Model
         }
         return "id:" . $this->pk;
     }
+
+    public function actualizarPassword(string $pwd_nuevo): void {
+        if ($this->pk) {
+            $usuario_tb = new Table('usuario', self::$db_config);
+            $hash = password_hash($pwd_nuevo, PASSWORD_DEFAULT);
+            $usuario_tb->update(['password' => $hash], 'id = ?', [$this->pk]);
+        }
+    }
+
+    public function procesarCambioPassword($pwd_actual, $pwd_nuevo, $pwd_confirmacion): array {
+        if (!$pwd_actual || !$pwd_nuevo || !$pwd_confirmacion) {
+            return ["success" => false, "err" => "Por favor, completa todos los campos."];
+        }
+
+        if ($pwd_nuevo !== $pwd_confirmacion) {
+            return ["success" => false, "err" => "La nueva contraseña y su confirmación no coinciden."];
+        }
+
+        $username = $this->username ?? ($this->matricula ?? "");
+        $usr_auth = new Usuario(self::$db_config);
+
+        if ($usr_auth->authenticate($username, $pwd_actual)) {
+            $this->actualizarPassword($pwd_nuevo);
+            $this->logout();
+            return ["success" => true];
+        }
+
+        return ["success" => false, "err" => "La contraseña actual no es válida."];
+    }
 }
