@@ -77,6 +77,13 @@
                     </a></li>
                     <?php endif; ?>
 
+                    <?php if ($_SESSION["current_user"]->can("registrorapidoevento.*")): ?>
+                    <li class="nav-item text-center"><a href="registrorapidoevento.php" class="nav-link">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Registro Rápido a Eventos
+                    </a></li>
+                    <?php endif; ?>
+
                 </ul>
             </div>
             <?php endif; ?>
