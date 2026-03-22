@@ -4,7 +4,7 @@ session_start();
 
 include_once 'app/registroevento/controller.php';
 
-if (!isset($_SESSION["current_user"]) || !$_SESSION["current_user"]->can("registroevento.*")) {
+if (!isset($_SESSION["current_user"]) || !$_SESSION["current_user"]->can("otro.registrar_en_evento")) {
     header("Location: index.php");
     exit();
 }

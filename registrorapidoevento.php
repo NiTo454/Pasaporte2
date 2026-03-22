@@ -28,7 +28,7 @@ if ($method === 'POST') {
 	}
 }
 
-if (!isset($_SESSION["current_user"]) || !$_SESSION["current_user"]->can("registrorapidoevento.*")) {
+if (!isset($_SESSION["current_user"]) || !$_SESSION["current_user"]->can("otro.registrar_en_evento_rapido")) {
     header("Location: index.php");
     exit();
 }
