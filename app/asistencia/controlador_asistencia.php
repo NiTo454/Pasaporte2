@@ -16,7 +16,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 $object = new Asistencia();
 $errors = [];
 
-// 1. PROCESAMIENTO DE ESCANEO (AJAX / POST)
 if ($method === 'POST' && $accion === 'procesar_qr') {
     header('Content-Type: application/json');
     $evento_id = intval(getvar('evento_id'));
@@ -31,30 +30,40 @@ if ($method === 'POST' && $accion === 'procesar_qr') {
         $userModel = new Usuario();
         $usuario_row = null;
         $search_value = trim($qr_data);
-
-        // Robustez: Si el QR es una URL (ej. del perfil), extraemos el ID o matrícula.
-        if (filter_var($search_value, FILTER_VALIDATE_URL)) {
-            $query_string = parse_url($search_value, PHP_URL_QUERY);
-            if ($query_string) {
-                parse_str($query_string, $params);
-                if (isset($params['id'])) {
-                    $search_value = trim($params['id']);
-                } elseif (isset($params['mat'])) {
-                    $search_value = trim($params['mat']);
+        $json_data = json_decode($search_value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($json_data)) {
+            if (isset($json_data['id'])) {
+                $usuario_row = $userModel->select("id = ?", [trim($json_data['id'])]);
+            } elseif (isset($json_data['matricula'])) {
+                $usuario_row = $userModel->select("matricula = ?", [trim($json_data['matricula'])]);
+            } elseif (isset($json_data['mat'])) {
+                $usuario_row = $userModel->select("matricula = ?", [trim($json_data['mat'])]);
+            }
+        }
+        if (!$usuario_row) {
+            if (filter_var($search_value, FILTER_VALIDATE_URL)) {
+                $query_string = parse_url($search_value, PHP_URL_QUERY);
+                if ($query_string) {
+                    parse_str($query_string, $params);
+                    if (isset($params['id'])) {
+                        $search_value = trim($params['id']);
+                    } elseif (isset($params['mat'])) {
+                        $search_value = trim($params['mat']);
+                    }
                 }
+            }
+
+            if (strpos($search_value, 'mat:') === 0) {
+                $usuario_row = $userModel->select("matricula = ?", [trim(substr($search_value, 4))]);
+            } elseif (strpos($search_value, 'id:') === 0) {
+                $usuario_row = $userModel->select("id = ?", [trim(substr($search_value, 3))]);
+            } else {
+                $usuario_row = $userModel->select("id = ? OR matricula = ? OR username = ?", [$search_value, $search_value, $search_value]);
             }
         }
 
-        if (strpos($search_value, 'mat:') === 0) {
-            $usuario_row = $userModel->select("matricula = ?", [trim(substr($search_value, 4))]);
-        } elseif (strpos($search_value, 'id:') === 0) {
-            $usuario_row = $userModel->select("id = ?", [trim(substr($search_value, 3))]);
-        } else {
-            $usuario_row = $userModel->select("id = ? OR matricula = ?", [$search_value, $search_value]);
-        }
-
         if (!$usuario_row) {
-            echo json_encode(['status' => 'error', 'message' => 'Usuario no encontrado.']);
+            echo json_encode(['status' => 'error', 'message' => 'Usuario no encontrado. Código leído: ' . htmlspecialchars($qr_data)]);
             exit;
         }
         $usuario = new Usuario();
@@ -78,7 +87,7 @@ if ($method === 'POST' && $accion === 'procesar_qr') {
                 ]);
             } else {
                 echo json_encode([
-                    'status' => 'error', 
+                    'status' => 'error',
                     'message' => "¡Cuidado! {$nombre_completo} ya tiene asistencia registrada."
                 ]);
             }
@@ -108,7 +117,7 @@ if ($method === 'POST' && $accion === 'procesar_qr') {
 
         if ($asistio) {
             echo json_encode([
-                'status' => 'success', 
+                'status' => 'success',
                 'message' => 'Usuario inscrito y asistencia tomada.',
                 'kpi' => [
                     'hoy' => $kpi_hoy,

@@ -30,7 +30,7 @@ function actualizarKPIs(kpi) {
     const kpiUltimo = document.getElementById('kpi-ultimo-registro-container');
 
     if (kpiHoy) kpiHoy.innerText = kpi.hoy;
-    
+
     if (kpiUltimo) {
         if (kpi.ultimo_nombre === 'Ninguno') {
             kpiUltimo.innerHTML = `<h3 class="kpi-value" style="font-size: 1.2rem; margin-top: 5px;">Ninguno</h3>`;
@@ -63,7 +63,7 @@ function iniciarEscaneo() {
     document.getElementById('btn-iniciar-qr').classList.add('d-none');
     document.getElementById('btn-detener-qr').classList.remove('d-none');
     document.getElementById('qr-reader-container').style.display = 'block';
-    
+
     const modoContinuoSwitch = document.getElementById('modoContinuo');
     isContinuous = modoContinuoSwitch ? modoContinuoSwitch.checked : false;
 
@@ -79,10 +79,18 @@ function iniciarEscaneo() {
 
     html5QrcodeScanner.start(
         { facingMode: "environment" },
-        { 
-            fps: 30, 
-            qrbox: { width: 250, height: 250 },
-            formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] 
+        {
+            fps: 10,
+            qrbox: function(viewfinderWidth, viewFinderHeight) {
+                let minEdgePercentage = 0.8; // 80% del área de la cámara
+                let minEdgeSize = Math.min(viewfinderWidth, viewFinderHeight);
+                let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+                return {
+                    width: qrboxSize,
+                    height: qrboxSize
+                };
+            },
+            formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]
         },
         onScanSuccess,
         onScanFailure
@@ -103,14 +111,16 @@ function detenerEscaneo() {
 }
 
 function onScanSuccess(decodedText, decodedResult) {
+    console.log("QR Detectado crudo:", decodedText);
+
     if (lastScanned === decodedText) {
-        return; 
+        return;
     }
-    
+
     lastScanned = decodedText;
     clearTimeout(scanTimeout);
-    scanTimeout = setTimeout(() => { lastScanned = null; }, 1500); 
-    
+    scanTimeout = setTimeout(() => { lastScanned = null; }, 3500);
+
     reproducirSonido();
     procesarAsistencia(decodedText);
 }
@@ -142,8 +152,8 @@ function procesarAsistencia(matricula) {
             actualizarKPIs(data.kpi);
             if (!isContinuous) detenerEscaneo();
         } else if (data.status === 'not_registered') {
-            detenerEscaneo(); 
-            
+            detenerEscaneo();
+
             if(statusDiv) statusDiv.innerHTML = `
                 <div class="p-3 rounded mb-3 text-center fade-in shadow-sm" style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3);">
                     <p class="text-warning fw-bold mb-3"><i class="fa-solid fa-circle-question"></i> ${data.message}</p>
@@ -204,12 +214,12 @@ function agregarALista(mensaje, tipo) {
     li.style.background = 'var(--glass-bg)';
     li.style.borderColor = 'var(--glass-border)';
     li.style.color = 'var(--text-color)';
-    
+
     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-    
+
     let colorText = tipo === 'success' ? 'var(--color-green-400)' : (tipo === 'danger' ? 'var(--color-red-400)' : 'var(--color-blue-400)');
     li.innerHTML = `<span class="fw-bold" style="color: ${colorText};">${mensaje}</span> <span class="badge border" style="background: rgba(255,255,255,0.1); border-color: var(--glass-border) !important;">${time}</span>`;
-    
+
     ul.prepend(li);
     if (ul.children.length > 8) {
         ul.removeChild(ul.lastChild);
@@ -224,8 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('qr-status').innerHTML = '';
         });
     }
-
-    // Convertir el registro manual a AJAX para que tampoco recargue la página
     const formManual = document.getElementById('form-manual');
     if (formManual) {
         formManual.addEventListener('submit', (e) => {
@@ -233,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!syncEventoManual()) return;
             const matriculaInput = document.getElementById('usuario_id_manual');
             procesarAsistencia(matriculaInput.value);
-            matriculaInput.value = ''; // Limpiar el input tras escanear
+            matriculaInput.value = '';
         });
     }
 });
